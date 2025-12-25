@@ -11,7 +11,7 @@ import (
 	"strings"
 	"time"
 
-	"github.com/nwaples/rardecode"
+	"github.com/nwaples/rardecode/v2"
 )
 
 // Rar provides facilities for reading RAR archives.
@@ -54,6 +54,13 @@ type Rar struct {
 
 	rr *rardecode.Reader     // underlying stream reader
 	rc *rardecode.ReadCloser // supports multi-volume archives (files only)
+}
+
+func (r *Rar) rardecodeOptions() []rardecode.Option {
+	if r.Password == "" {
+		return nil
+	}
+	return []rardecode.Option{rardecode.Password(r.Password)}
 }
 
 // CheckExt ensures the file extension matches the format.
@@ -131,7 +138,7 @@ func (r *Rar) addTopLevelFolder(sourceArchive, destination string) (string, erro
 	}
 	defer file.Close()
 
-	rc, err := rardecode.NewReader(file, r.Password)
+	rc, err := rardecode.NewReader(file, r.rardecodeOptions()...)
 	if err != nil {
 		return "", fmt.Errorf("creating archive reader: %v", err)
 	}
@@ -234,7 +241,7 @@ func (r *Rar) OpenFile(filename string) error {
 		return fmt.Errorf("rar archive is already open for reading")
 	}
 	var err error
-	r.rc, err = rardecode.OpenReader(filename, r.Password)
+	r.rc, err = rardecode.OpenReader(filename, r.rardecodeOptions()...)
 	if err != nil {
 		return err
 	}
@@ -249,7 +256,7 @@ func (r *Rar) Open(in io.Reader, size int64) error {
 		return fmt.Errorf("rar archive is already open for reading")
 	}
 	var err error
-	r.rr, err = rardecode.NewReader(in, r.Password)
+	r.rr, err = rardecode.NewReader(in, r.rardecodeOptions()...)
 	return err
 }
 
