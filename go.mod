@@ -1,4 +1,4 @@
-module github.com/anchore/archiver/v3
+module github.com/alauda/archiver/v3
 
 go 1.23
 
