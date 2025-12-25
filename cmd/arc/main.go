@@ -10,7 +10,7 @@ import (
 	"path/filepath"
 	"strings"
 
-	"github.com/anchore/archiver/v3"
+	"github.com/alauda/archiver/v3"
 	"github.com/klauspost/compress/zip"
 	"github.com/nwaples/rardecode/v2"
 )
